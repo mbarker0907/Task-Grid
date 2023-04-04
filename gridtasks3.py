@@ -23,7 +23,7 @@ class TaskGridApp(tk.Tk):
 # Set up the grid
 class TaskGrid(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent, bg='blue')
+        super().__init__(parent, bg='#297ac1')
 
         self.create_grid()
 
@@ -36,9 +36,9 @@ class TaskGrid(tk.Frame):
                 self.create_text_widget(i, j)
 
     def create_text_widget(self, row, column):
-        text_widget = tk.Text(self, bg='#B06D4D', font=("Arial Bold", 18), borderwidth=6, relief=tk.SUNKEN,
+        text_widget = tk.Text(self, bg='#ac3a11', fg='white', font=("Arial Bold", 20), borderwidth=6, relief=tk.SUNKEN,
                               width=10, height=5, wrap=tk.WORD)
-        text_widget.tag_configure("center", justify='center')
+        text_widget.tag_configure("center", justify='center', wrap='word', spacing1=50, spacing2=0, spacing3=50)
 
         # Add an empty space to make the tag cover the entire text area
         text_widget.insert(tk.END, " ", "center")
@@ -159,8 +159,7 @@ class AddTaskPopup(tk.Toplevel):
         # Insert the task text into the text widget
         self.text_widget.insert(tk.END, task_text, "center")
 
-        # Disable the widget to make it uneditable
-        self.text_widget.config(state=tk.DISABLED)
+
 
         # Close the popup
         self.destroy()
