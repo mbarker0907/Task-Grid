@@ -1,39 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
-
-class DarkModeStyling:
-    def __init__(self):
-        self.bg_color = '#2e2e2e'
-        self.fg_color = '#ffffff'
-        self.btn_color = '#3c3c3c'
-
-class TaskGrid(tk.Frame):
-    def __init__(self, master=None, **kw):
-        super().__init__(master, **kw)
-        self.master = master
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.label = tk.Label(self, text="TaskGrid")
-        self.label.pack()
-
-    def toggle_dark_mode(self):
-        self.master.dark_mode = not self.master.dark_mode
-        self.style_widgets()
-
-    def style_widgets(self):
-        if self.master.dark_mode:
-            styling = self.master.dark_mode_styling
-            self.config(bg=styling.bg_color)
-            self.label.config(bg=styling.bg_color, fg=styling.fg_color)
-        else:
-            self.config(bg=None)
-            self.label.config(bg=None, fg=None)
+import colorsys
 
 
 class TaskGridApp(tk.Tk):
     def __init__(self):
         super().__init__()
+
 
         # Set up the main window
         self.title('TaskGrid')
@@ -76,15 +49,13 @@ class TaskGridApp(tk.Tk):
         # Add "Toggle Dark Mode" menu item to the "View" menu
         self.view_menu.add_command(label="Toggle Dark Mode", command=self.toggle_dark_mode)
 
-
     def toggle_dark_mode(self):
         self.dark_mode = not self.dark_mode
         self.task_grid.style_widgets()
 
 
+
 '''#------------------------------------------------#'''
-
-
 
 # Set up the grid
 class TaskGrid(tk.Frame):
@@ -101,6 +72,10 @@ class TaskGrid(tk.Frame):
             for j in range(3):
                 self.create_text_widget(i, j)
 
+    def is_task_added(self, text_widget):
+        return text_widget.get(1.0, tk.END).strip() != ""
+
+
     def create_text_widget(self, row, column):
         text_widget = tk.Text(self, bg='#ac3a11', fg='white', font=("Arial Bold", 26), borderwidth=6, relief=tk.SUNKEN,
                               width=10, height=5, wrap=tk.WORD)
@@ -109,42 +84,45 @@ class TaskGrid(tk.Frame):
         # Add an empty space to make the tag cover the entire text area
         text_widget.insert(tk.END, " ", "center")
 
+        # Set flag to track if a task is added
+        text_widget.task_added = False
+
         text_widget.tag_bind("center", "<Button-1>",
                              lambda event, text_widget=text_widget: self.change_color(event, text_widget))
         text_widget.bind("<Button-3>",
                          lambda event, text_widget=text_widget: self.show_text_widget_context_menu(event, text_widget))
 
+        # Add hover effect to the text_widget
+        text_widget.bind("<Enter>", lambda event, text_widget=text_widget: self.hover_enter(event, text_widget))
+        text_widget.bind("<Leave>", lambda event, text_widget=text_widget: self.hover_leave(event, text_widget))
 
         text_widget.config(state=tk.DISABLED)
 
         text_widget.grid(row=row, column=column, sticky="nsew", padx=10, pady=10)
 
     def show_text_widget_context_menu(self, event, text_widget):
-        """
-        Show the context menu for the text widget.
-
-        :param event: The event object containing information about the event that triggered the method
-        :param text_widget: The text widget for which the context menu is being displayed
-        """
         # Instantiate the TaskPopupMenu class
         task_popup_menu = TaskPopupMenu(self, text_widget)
 
         # Display the context menu at the cursor's position
         task_popup_menu.post(event.x_root, event.y_root)
 
-    def style_widgets(self):
-        if self.master.dark_mode:
-            styling = self.master.dark_mode_styling
-            self.config(bg=styling.bg_color)
-            self.label.config(bg=styling.bg_color, fg=styling.fg_color)
-        else:
-            self.config(bg='#297ac1')  # Set the original background color
-            self.label.config(bg='#297ac1', fg='black')  # Set the original background and text colors
+    def hover_enter(self, event, text_widget):
+        if not self.is_task_added(text_widget):
+            text_widget.config(bg="#d45242")
 
-    def create_widgets(self):
-        self.label = tk.Label(self, text="TaskGrid")
-        self.label.pack()
-        self.style_widgets()
+    def hover_leave(self, event, text_widget):
+        if not self.is_task_added(text_widget):
+            text_widget.config(bg="#ac3a11")
+
+    def change_color(self, event, text_widget):
+        if not text_widget.task_added:
+            text_widget.config(bg='#8CD496')
+            text_widget.task_added = True
+        else:
+            text_widget.config(bg='#ac3a11')
+            text_widget.task_added = False
+
 
 
 
@@ -251,6 +229,12 @@ class AddTaskPopup(tk.Toplevel):
 
 
 '''#------------------------------------------------#'''
+
+class DarkModeStyling:
+    def __init__(self):
+        self.bg_color = '#2e2e2e'
+        self.fg_color = '#ffffff'
+        self.btn_color = '#3c3c3c'
 
 
 if __name__ == '__main__':
