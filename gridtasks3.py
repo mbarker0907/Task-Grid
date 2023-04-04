@@ -40,6 +40,17 @@ class TaskGridApp(tk.Tk):
         self.geometry('700x700')
         self.grid_propagate(False)
 
+        # Get the screen dimensions
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        # Calculate the x and y coordinates to center the window
+        x = (screen_width / 2) - (700 / 2)
+        y = (screen_height / 2) - (700 / 2)
+
+        # Set the window's starting position
+        self.geometry(f'+{int(x)}+{int(y)}')
+
         # Set up dark mode styling and state
         self.dark_mode_styling = DarkModeStyling()
         self.dark_mode = False
