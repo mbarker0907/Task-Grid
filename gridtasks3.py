@@ -23,7 +23,7 @@ class TaskGridApp(tk.Tk):
 # Set up the grid
 class TaskGrid(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(parent, bg='blue')
 
         self.create_grid()
 
@@ -48,9 +48,10 @@ class TaskGrid(tk.Frame):
         text_widget.bind("<Button-3>",
                          lambda event, text_widget=text_widget: self.show_text_widget_context_menu(event, text_widget))
 
+
         text_widget.config(state=tk.DISABLED)
 
-        text_widget.grid(row=row, column=column, sticky="nsew")
+        text_widget.grid(row=row, column=column, sticky="nsew", padx=10, pady=10)
 
     def show_text_widget_context_menu(self, event, text_widget):
         """
@@ -138,6 +139,9 @@ class AddTaskPopup(tk.Toplevel):
 
         # Set the focus to the input box to allow the user to start typing right away
         self.input_box.focus()
+
+        # Bind the "Enter" key to the apply_task method
+        self.input_box.bind('<Return>', lambda event: self.apply_task())
 
     def apply_task(self):
         """
