@@ -52,6 +52,19 @@ class TaskGrid(tk.Frame):
 
         text_widget.grid(row=row, column=column, sticky="nsew")
 
+    def show_text_widget_context_menu(self, event, text_widget):
+        """
+        Show the context menu for the text widget.
+
+        :param event: The event object containing information about the event that triggered the method
+        :param text_widget: The text widget for which the context menu is being displayed
+        """
+        # Instantiate the TaskPopupMenu class
+        task_popup_menu = TaskPopupMenu(self, text_widget)
+
+        # Display the context menu at the cursor's position
+        task_popup_menu.post(event.x_root, event.y_root)
+
 
 '''#------------------------------------------------#'''
 
@@ -69,7 +82,7 @@ class TaskPopupMenu(tk.Menu):
         self.add_command(label="Clear Task", command=self.clear_text_widget)
 
     def show_add_task_popup(self):
-        add_task_popup = AddTaskPopup(self, self.text_widget)
+        add_task_popup = AddTaskPopup(self.master, self.text_widget)
         add_task_popup.show()
 
     def clear_text_widget(self):
@@ -86,10 +99,12 @@ class TaskPopupMenu(tk.Menu):
         self.text_widget.config(state=tk.DISABLED)
 
 
+
+
 '''#------------------------------------------------#'''
 
 class AddTaskPopup(tk.Toplevel):
-    def __init__(self, master, apply_callback):
+    def __init__(self, master, text_widget):
         """
         Initialize the AddTaskPopup class.
 
@@ -99,7 +114,7 @@ class AddTaskPopup(tk.Toplevel):
         super().__init__(master)
 
         self.master = master
-        self.apply_callback = apply_callback
+        self.text_widget = text_widget
 
         self.configure(bg='#8CD496')
 
@@ -128,8 +143,22 @@ class AddTaskPopup(tk.Toplevel):
         """
         Apply the task and close the popup.
         """
+        # Get the task text from the input box
         task_text = self.input_box.get()
-        self.apply_callback(task_text)
+
+        # Enable the widget to edit the content
+        self.text_widget.config(state=tk.NORMAL)
+
+        # Clear the text widget
+        self.text_widget.delete(1.0, tk.END)
+
+        # Insert the task text into the text widget
+        self.text_widget.insert(tk.END, task_text, "center")
+
+        # Disable the widget to make it uneditable
+        self.text_widget.config(state=tk.DISABLED)
+
+        # Close the popup
         self.destroy()
 
 
