@@ -60,7 +60,7 @@ class TaskGridApp(tk.Tk):
 # Set up the grid
 class TaskGrid(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent, bg='#3F51B5')
+        super().__init__(parent, bg='#F44336')
 
         self.create_grid()
 
@@ -77,10 +77,10 @@ class TaskGrid(tk.Frame):
 
     def create_text_widget(self, row, column):
         # Create a rounded canvas
-        rounded_canvas = RoundedCanvas(self, bg='#303F9F', corner_radius=10)
+        rounded_canvas = RoundedCanvas(self, bg='#4CAF50', corner_radius=10)
 
         # Create a text widget using the rounded canvas as its parent
-        text_widget = tk.Text(rounded_canvas, bg='#303F9F', fg='white', font=("Arial Bold", 26), borderwidth=0,
+        text_widget = tk.Text(rounded_canvas, bg='#2196F3', fg='white', font=("Arial Bold", 26), borderwidth=0,
                               width=10, height=5, wrap=tk.WORD)
         text_widget.tag_configure("center", justify='center', wrap='word', spacing1=50, spacing2=0, spacing3=50)
 
@@ -120,15 +120,17 @@ class TaskGrid(tk.Frame):
 
     def hover_leave(self, event, text_widget):
         if not self.is_task_added(text_widget):
-            text_widget.config(bg="#303F9F")
+            text_widget.config(bg="#2196F3")
 
     def change_color(self, event, text_widget):
         if not text_widget.task_added:
             text_widget.config(bg='#303F9F')
             text_widget.task_added = True
         else:
-            text_widget.config(bg='#303F9F')
+            text_widget.config(bg='#2196F3')
             text_widget.task_added = False
+
+
 class RoundedCanvas(tk.Canvas):
     def __init__(self, parent, bg, corner_radius=10, **kwargs):
         tk.Canvas.__init__(self, parent, highlightthickness=0, **kwargs)
