@@ -60,7 +60,7 @@ class TaskGridApp(tk.Tk):
 # Set up the grid
 class TaskGrid(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent, bg='#297ac1')
+        super().__init__(parent, bg='#3F51B5')
 
         self.create_grid()
 
@@ -75,9 +75,12 @@ class TaskGrid(tk.Frame):
     def is_task_added(self, text_widget):
         return text_widget.get(1.0, tk.END).strip() != ""
 
-
     def create_text_widget(self, row, column):
-        text_widget = tk.Text(self, bg='#ac3a11', fg='white', font=("Arial Bold", 26), borderwidth=6, relief=tk.SUNKEN,
+        # Create a rounded canvas
+        rounded_canvas = RoundedCanvas(self, bg='#303F9F', corner_radius=10)
+
+        # Create a text widget using the rounded canvas as its parent
+        text_widget = tk.Text(rounded_canvas, bg='#303F9F', fg='white', font=("Arial Bold", 26), borderwidth=0,
                               width=10, height=5, wrap=tk.WORD)
         text_widget.tag_configure("center", justify='center', wrap='word', spacing1=50, spacing2=0, spacing3=50)
 
@@ -98,7 +101,11 @@ class TaskGrid(tk.Frame):
 
         text_widget.config(state=tk.DISABLED)
 
-        text_widget.grid(row=row, column=column, sticky="nsew", padx=10, pady=10)
+        # Pack the text widget inside the rounded canvas
+        text_widget.pack(expand=True, fill=tk.BOTH, padx=5, pady=5)
+
+        # Add the rounded canvas to the grid
+        rounded_canvas.grid(row=row, column=column, sticky="nsew", padx=10, pady=10)
 
     def show_text_widget_context_menu(self, event, text_widget):
         # Instantiate the TaskPopupMenu class
@@ -109,19 +116,41 @@ class TaskGrid(tk.Frame):
 
     def hover_enter(self, event, text_widget):
         if not self.is_task_added(text_widget):
-            text_widget.config(bg="#d45242")
+            text_widget.config(bg="#1A237E")
 
     def hover_leave(self, event, text_widget):
         if not self.is_task_added(text_widget):
-            text_widget.config(bg="#ac3a11")
+            text_widget.config(bg="#303F9F")
 
     def change_color(self, event, text_widget):
         if not text_widget.task_added:
-            text_widget.config(bg='#8CD496')
+            text_widget.config(bg='#303F9F')
             text_widget.task_added = True
         else:
-            text_widget.config(bg='#ac3a11')
+            text_widget.config(bg='#303F9F')
             text_widget.task_added = False
+class RoundedCanvas(tk.Canvas):
+    def __init__(self, parent, bg, corner_radius=10, **kwargs):
+        tk.Canvas.__init__(self, parent, highlightthickness=0, **kwargs)
+        self.corner_radius = corner_radius
+        self.bg = bg
+        self.width = self.winfo_reqwidth()
+        self.height = self.winfo_reqheight()
+        self.bind("<Configure>", self.on_configure)
+
+    def on_configure(self, event=None):
+        self.delete("all")
+        self.width = self.winfo_width()
+        self.height = self.winfo_height()
+        self.create_rounded_rect(0, 0, self.width, self.height, self.corner_radius, fill=self.bg)
+
+    def create_rounded_rect(self, x1, y1, x2, y2, r, **kwargs):
+        self.create_arc(x1, y1, x1 + r, y1 + r, start=90, extent=90, **kwargs)
+        self.create_arc(x2 - r, y1, x2, y1 + r, start=0, extent=90, **kwargs)
+        self.create_arc(x2 - r, y2 - r, x2, y2, start=270, extent=90, **kwargs)
+        self.create_arc(x1, y2 - r, x1 + r, y2, start=180, extent=90, **kwargs)
+        self.create_rectangle(x1 + r / 2, y1, x2 - r / 2, y2, **kwargs)
+        self.create_rectangle(x1, y1 + r / 2, x2, y2 - r / 2, **kwargs)
 
 
 
